@@ -1,0 +1,2 @@
+This role is assigned to any Linux machine running an icinga daemon, whether in client or master mode.
+Takes care of the basic icinga installation, as well as plugin installation and so on.

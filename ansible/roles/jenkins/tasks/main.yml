@@ -1,0 +1,45 @@
+---
+
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+  state: present
+
+- name: Instal java (=dependencies)
+  apt:
+    name: openjdk-8-jre
+    update_cache: yes
+    state: present
+
+- name: Add jenkins repo
+  lineinfile: 
+    path: /etc/apt/sources.list
+    line: "deb http://pkg.jenkins.io/debian-stable binary/"
+
+- name: Add grafana repo's key
+  shell: wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+
+- name: Install Jenkins
+  apt:
+    name: jenkins
+    state: present
+    update_cache: yes
+
+- name: Verify Jenkins service is down
+  service:
+    name: jenkins
+    state: stopped
+
+- name: Copy jenkins config dir
+  unarchive:
+    src: jenkins.tar.gz
+    dest: /var/lib/
+
+- name: Start Jenkins service and enable on boot
+  service:
+    name: jenkins
+    state: started
+    enabled: yes
+

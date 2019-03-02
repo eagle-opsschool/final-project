@@ -1,0 +1,51 @@
+---
+
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+  state: present
+
+- name: Add grafana repo
+  lineinfile: 
+    path: /etc/apt/sources.list
+    line: "deb https://packages.grafana.com/oss/deb stable main"
+
+- name: Add grafana repo's key
+  shell: curl https://packages.grafana.com/gpg.key | sudo apt-key add -
+
+- name: Install grafana
+  apt: name=grafana update_cache=yes state=present
+  notify: restart grafana
+
+- name: Create prometheus datasource
+  template:
+    src: datasource.yaml
+    dest: /etc/grafana/provisioning/datasources/sample.yaml
+  notify: restart grafana
+
+- name: Create dashboard base file
+  copy:
+    src: sample.yaml
+    dest: /etc/grafana/provisioning/dashboards/sample.yaml
+  notify: restart grafana
+
+- name: Create node-exporter dashboard
+  copy:
+    src: node-dashboard.json
+    dest: /etc/grafana/provisioning/dashboards/
+  notify: restart grafana
+
+- name: Create mysqld-exporter dashboard
+  copy:
+    src: mysql-dashboard.json
+    dest: /etc/grafana/provisioning/dashboards/
+  notify: restart grafana
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register
+

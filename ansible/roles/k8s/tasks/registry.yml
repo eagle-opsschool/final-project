@@ -1,0 +1,32 @@
+---
+
+#- name: Pull registry container
+#  docker_image:
+#    name: registry:2
+
+- name: Run the registry
+  docker:
+    name: registry
+    image: registry:2
+    state: started
+    restart_policy: always
+    ports:
+    - "5000:5000"
+
+- name: Pull wikimedia container
+  docker_image:
+    name: wikimedia/mediawiki:1.30.0-wmf4
+
+- name: Tag and push wikimedia container to private registy
+  docker_image:
+    name: wikimedia/mediawiki:1.30.0-wmf4
+    repository: localhost:5000/mediawiki
+    tag: 1.30.0-wmf4
+    push: yes
+
+- name: Remove local containers
+  docker_image:
+    name: {{ item }}
+    state: absent
+  with_items:
+  - wikimedia/mediawiki:1.30.0-wmf4

@@ -1,0 +1,33 @@
+---
+- name: Install icinga2
+  apt: name=icinga2 update_cache=yes
+  notify: Restart icinga client
+
+- name: Install some plugin dependencies
+  apt:
+    cache_valid_time: 21600
+    state: latest
+    pkg:
+    - nagios-plugins-standard
+#    - nagios-snmp-plugins
+    - python-pysnmp4
+#    - python-kerberos
+
+- name: Install some more plugin dependencies
+  apt: 
+    install_recommends: no
+    cache_valid_time: 21600
+    state: latest
+    pkg:
+    - nagios-nrpe-plugin
+
+- name: Install even more plugin dependencies
+  apt:
+    cache_valid_time: 21600
+    state: latest
+    pkg:
+    - smartmontools
+    - libconfig-json-perl
+
+- name: Make check_dhcp setuid
+  file: path=/usr/lib/nagios/plugins/check_dhcp mode=4755

@@ -1,0 +1,10 @@
+---
+
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: Copy /etc/hosts file
+  template:
+    src: hosts
+    dest: /etc/hosts

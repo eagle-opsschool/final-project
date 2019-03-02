@@ -1,0 +1,7 @@
+{
+  "ID": "{{ ansible_hostname }}-mysqld-exporter-9104",
+  "Name": "mysqld-exporter",
+  "Address": "{{ ansible_default_ipv4["address"] }}",
+  "Port": 9104,
+  "tags": ["mysqld-exporter"]
+}

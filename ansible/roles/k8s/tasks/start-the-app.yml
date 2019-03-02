@@ -1,0 +1,23 @@
+---
+
+- name: Copy mediawiki's yml file
+  template:
+    src: mediawiki.yml
+    dest: /home/ubuntu/
+
+- name: Figure mysql public ip addr
+  shell: curl https://ipinfo.io/ip
+  register: mysql_outside_addr
+
+- name: Copy mysql's yml file
+  template:
+    src: mysql.yml
+    dest: /home/ubuntu/
+
+- name: Run mysql
+  shell: kubectl apply -f /home/ubuntu/mysql.yml
+  become_user: ubuntu
+
+- name: Run mediawiki
+  shell: kubectl apply -f /home/ubuntu/mediawiki.yml
+  become_user: ubuntu

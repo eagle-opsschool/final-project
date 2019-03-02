@@ -1,0 +1,15 @@
+---
+
+- name: Download consul-helm from git
+  unarchive:
+    src: https://github.com/hashicorp/consul-helm/archive/v0.6.0.tar.gz
+    dest: /home/ubuntu/
+    remote_src: yes
+
+- name: Copy values.yml  file
+  copy:
+    src: values.yaml
+    dest: /home/ubuntu/consul-helm-0.6.0/values.yaml
+
+#- name: Run the helm chart
+#  shell cd /home/ubuntu/consul-helm && helm install --dry-run ./

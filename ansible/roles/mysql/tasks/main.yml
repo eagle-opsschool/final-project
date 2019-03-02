@@ -1,0 +1,12 @@
+---
+
+- import_tasks: install-mysql.yml
+  tags: mysql
+
+- import_tasks: mysql-master.yml
+  tags: mysql
+  when: mysql_type == "master"
+
+- import_tasks: mysql-slave.yml
+  tags: mysql
+  when: mysql_type == "slave"

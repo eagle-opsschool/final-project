@@ -1,0 +1,55 @@
+---
+
+- name: Install MySQL
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - libmysqlclient-dev
+    - python-mysqldb
+    - mysql-server
+    - mysql-client
+    - percona-xtrabackup
+
+- name: Start the MySQL service
+  service: name=mysql state=started
+
+- name: Create deploy user for mysql
+  mysql_user: user="media" host="%" password=media priv=mediawiki.*:ALL,GRANT
+
+#- name: Copy .my.cnf file with root password credentials
+#  template: src=templates/.my.cnf dest=/etc/mysql/my.cnf owner=root mode=0600
+
+- name: Update mysql root password for all root accounts
+  mysql_user: name=root host={{ item }} password=root
+  with_items:
+#    - 127.0.0.1
+#    - ::1
+#    - localhost
+    - '%'
+
+- name: Copy credential file for mysqld_exporter
+  copy: 
+    src: .my.cnf
+    dest: /root/.my.cnf
+
+- name: Install mysqld_exporter for prometheus
+  apt:
+    name: prometheus-mysqld-exporter
+    state: installed
+    update_cache: yes
+
+- name: Copy mysqld_exporter systemd file
+  copy:
+    src: prometheus-mysqld-exporter.service
+    dest: /lib/systemd/system/prometheus-mysqld-exporter.service
+
+- name: Start mysqld_exporter
+  systemd:
+    name: prometheus-mysqld-exporter
+    state: restarted
+    daemon_reload: yes
+
+- name: Copy consul registration json
+  template: src=payload-mysqld-exporter.json dest=/tmp/payload-mysqld-exporter.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload--mysqld-exporter.json http://{{ consul_ip }}:8500/v1/agent/service/register

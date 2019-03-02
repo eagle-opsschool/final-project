@@ -1,0 +1,7 @@
+{
+  "ID": "{{ ansible_hostname }}-node-exporter-9100",
+  "Name": "node-exporter",
+  "Address": "{{ ansible_default_ipv4["address"] }}",
+  "Port": 9100,
+  "tags": ["node-exporter"]
+}

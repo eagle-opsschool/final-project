@@ -1,0 +1,22 @@
+---
+
+- name: Install filebeat
+  apt:
+    deb: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-amd64.deb
+  notify: restart filebeat
+
+- name: Deploy conf file
+  template:
+    src: filebeat.yml
+    dest: /etc/filebeat/filebeat.yml
+  notify: restart filebeat
+
+- name: Enable filebeat service
+  service: name=filebeat enabled=yes
+
+- name: Create /etc/filebeat/conf.d if it ain't there
+  file: path=/etc/filebeat/conf.d state=directory
+
+#- name: Enable collecting syslogs
+#  shell: filebeat modules enable system
+#  notify: restart filebeat

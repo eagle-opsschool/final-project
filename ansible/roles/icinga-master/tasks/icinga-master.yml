@@ -1,0 +1,50 @@
+---
+- name: Set up some webui dependencies
+  apt: 
+    cache_valid_time: 21600
+    state: latest
+    pkg:
+    - icingaweb2
+    - php-pgsql
+    - php-imagick
+    - php-gd
+    - php-intl
+# notify: Restart icinga webui
+
+- name: Set up icinga2.conf
+  copy: src=icinga2.conf dest=/etc/icinga2/icinga2.conf
+  notify: Restart icinga master
+
+- name: Set up zones.conf
+  template: src=zones.conf dest=/etc/icinga2/zones.conf
+  notify: Restart icinga master
+
+- name: Kill some unneeded files that come with icinga
+  file: path=/etc/icinga2/{{ item }} state=absent
+  with_items:
+  - conf.d/groups.conf
+  - conf.d/apt.conf
+  - conf.d/satellite.conf
+  - zones.d/README
+  notify: Restart icinga master
+
+- name: Set up conf files
+  copy: src=conf.d/ dest=/etc/icinga2/conf.d/
+  notify: Restart icinga master
+
+- name: Create site config dir
+  file: path=/etc/icinga2/sites.d state=directory
+
+- name: Create hosts.d directory
+  file: path=/etc/icinga2/hosts.d state=directory
+
+- name: Create icinga master host directory
+  file: path=/etc/icinga2/hosts.d/{{ ansible_hostname }} state=directory
+
+- name: Install some more plugin dependencies
+  apt: 
+    cache_valid_time: 21600
+    state: latest
+    install_recommends: no
+    pkg:
+    - nagios-nrpe-plugin

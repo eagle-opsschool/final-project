@@ -1,0 +1,17 @@
+prometheus_ip: 10.0.0.104
+
+grafana_ip: 10.0.0.105
+
+kibana_ip: 10.0.0.106
+
+jenkins_ip: 10.0.0.112
+
+consul_ip: 10.0.0.109
+
+mysql_master_ip: 10.0.0.110
+
+k8s_master_ip: 10.0.0.101
+
+icinga_ip: 10.0.0.113
+
+haproxy_ip: 10.0.0.114

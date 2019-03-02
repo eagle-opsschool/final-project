@@ -1,0 +1,23 @@
+---
+
+#- name: Install consul
+#  apt:
+#  - name: consul
+#  - update_cache: yes
+
+- name: Copy consul installation script
+  copy:
+    src: consul-nomad-server-systemd-dnsmasq-userdata-bootstrap.sh
+    dest: /home/ubuntu/
+    mode: 0755
+
+- name: Install consul
+  shell: cd /home/ubuntu && bash consul-nomad-server-systemd-dnsmasq-userdata-bootstrap.sh
+
+- name: Join servers to cluster
+  shell: consul join {{ item }}
+  with_items:
+  - "{{ hostvars['consul1'].ansible_all_ipv4_addresses }}"
+  - "{{ hostvars['consul2'].ansible_all_ipv4_addresses }}"
+  - "{{ hostvars['consul3'].ansible_all_ipv4_addresses }}"
+

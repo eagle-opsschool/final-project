@@ -1,0 +1,45 @@
+---
+
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+  state: present
+
+- name: Add Docker apt key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+    update_cache: true
+
+- name: Install docker
+  apt: name=docker-ce update_cache=yes state=present
+  notify: restart docker
+
+- name: Ensure handlers are notified now to avoid firewall conflicts
+  meta: flush_handlers
+
+- name: Docker | Install Docker | Create Docker group
+  group:
+    name: docker
+    state: present
+
+- name: Docker | Install Docker | Add Docker group to local user
+  user:
+    name: ubuntu
+    comment: "add user to docker group"
+    groups: docker
+    append: yes
+
+- name: Docker | Install Docker | Enable Docker service at boot
+  systemd:
+    name: docker
+    enabled: yes
+    state: restarted

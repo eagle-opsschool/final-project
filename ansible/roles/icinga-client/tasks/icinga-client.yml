@@ -1,0 +1,47 @@
+---
+- name: Create /etc/icinga2/pki
+  file: path=/etc/icinga2/pki state=directory owner=nagios group=nagios
+
+- name: Check SSL credentials
+  stat: path=/etc/icinga2/pki/{{ ansible_hostname }}.crt
+  register: ssl_credentials
+
+- import_tasks: generate_ssl_credentials.yml
+  when: not ssl_credentials.stat.exists
+
+- name: Copy CA certificate
+  copy: src=ca.crt dest=/etc/icinga2/pki/ca.crt
+  notify: Restart icinga client
+
+- name: Kill local conf.d
+  file: path=/etc/icinga2/conf.d state=absent
+
+- name: Set up icinga2.conf 
+  copy: src=icinga2.conf dest=/etc/icinga2/icinga2.conf
+  notify: Restart icinga client
+
+- name: Set up zones and constants config
+  template: src={{ item }}.conf dest=/etc/icinga2/{{ item }}.conf
+  with_items:
+  - zones
+  - constants
+  notify: Restart icinga client
+
+- name: Remove local config directory
+  file: path=/etc/icinga2/conf.d state=absent
+  notify: Restart icinga client
+
+- name: Enable feature API
+  command: icinga2 feature enable api
+  register: enable_feature
+  changed_when: '"Enabling feature api" in enable_feature.stdout'
+  notify: Restart icinga client
+
+- name: Set up API feature config
+  copy: src=api.conf dest=/etc/icinga2/features-available/api.conf
+  notify: Restart icinga client
+
+- name: Set up zone and endpoint config for host
+  template: src=endpoint.conf dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/endpoint.conf
+  delegate_to: "{{ icinga_ip }}"
+  notify: Restart icinga master

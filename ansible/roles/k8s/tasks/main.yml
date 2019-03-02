@@ -1,0 +1,27 @@
+---
+
+- import_tasks: docker.yml
+  tags: docker
+
+- import_tasks: registry.yml
+  tags: docker
+  when: k8s_type == "master"
+
+- import_tasks: k8s-common.yml
+  tags: k8s
+
+- import_tasks: k8s-master.yml
+  tags: k8s
+  when: k8s_type == "master"
+
+- import_tasks: k8s-minion.yml
+  tags: k8s
+  when: k8s_type == "slave"
+
+- import_tasks: start-the-app.yml
+  tags: mediawiki
+  when: k8s_type == "master"
+
+- import_tasks: consul-registration.yml
+  tags: mediawiki
+  when: k8s_type == "slave"

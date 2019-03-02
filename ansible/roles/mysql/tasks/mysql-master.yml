@@ -1,0 +1,70 @@
+---
+
+- name: Copy consul registration json
+  template: src=payload-master.json dest=/tmp/payload-master.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload-master.json http://{{ consul_ip }}:8500/v1/agent/service/register
+
+- name: Edit mysql.conf and enable replication
+  copy:
+    src: mysqld-master.cnf
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+
+- name: Ensure replication user exists on master.
+  mysql_user:
+    name: "root"
+    host: "10.0.0.111"
+    password: "root"
+    priv: "*.*:REPLICATION SLAVE,REPLICATION CLIENT"
+
+- name: Restart mysql
+  service: name=mysql state=restarted
+
+- name: create temporary backup directory on master
+  tempfile:
+    state: directory
+    prefix: ansible-
+    suffix: .mysqlslave
+  register: backupdir
+
+- name: dump database from master
+  shell: >-
+    innobackupex --no-timestamp {{ backupdir.path }}/dump 2>&1 | tail -n 1
+  register: innobackupex
+  failed_when: '"completed OK!" not in innobackupex.stdout'
+
+- name: apply log to database dump
+  shell: >-
+    innobackupex --apply-log {{ backupdir.path }}/dump 2>&1 | tail -n 1
+  register: apply_log
+  failed_when: '"completed OK!" not in apply_log.stdout'
+
+- name: compress database dump
+  archive:
+    path: "{{ backupdir.path }}/dump/"
+    dest: "{{ backupdir.path }}/dump.tar.gz"
+    format: gz
+    owner: root
+    group: root
+    mode: 0600
+    remove: true
+
+- name: create temporary directory on localhost
+  delegate_to: localhost
+  tempfile:
+    state: directory
+    prefix: ansible-
+    suffix: .mysqlslave
+  register: local_tmp
+
+- name: download database dump from master
+  fetch:
+    src: "{{ backupdir.path }}/dump.tar.gz"
+    dest: /tmp/mysql-backup/
+    flat: true
+
+- name: remove database dump from master
+  file:
+    path: "{{ backupdir.path }}"
+    state: absent

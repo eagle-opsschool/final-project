@@ -1,0 +1,7 @@
+{
+  "ID": "{{ ansible_hostname }}-mysql-master-3306",
+  "Name": "mysql-master",
+  "Address": "{{ ansible_default_ipv4["address"] }}",
+  "Port": 3306,
+  "tags": ["mysql-master"]
+}

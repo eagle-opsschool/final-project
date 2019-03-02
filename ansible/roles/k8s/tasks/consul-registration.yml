@@ -1,0 +1,16 @@
+---
+
+- name: Find wikimedia port
+  shell: kubectl get svc -o wide | grep wikimedia | grep -oE '[0-9]{5}'
+  register: mediawiki_port
+  delegate_to: {{ k8s_master_ip }}
+
+- name: Figure out public ip addr
+  shell: curl https://ipinfo.io/ip
+  register: outside_addr
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register

@@ -1,0 +1,7 @@
+{
+  "ID": "{{ ansible_hostname }}-haproxy-80",
+  "Name": "haproxy",
+  "Address": "{{ ansible_default_ipv4["address"] }}",
+  "Port": 80,
+  "tags": ["haproxy"]
+}

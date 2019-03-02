@@ -1,0 +1,7 @@
+{
+  "ID": "{{ ansible_hostname }}-elasticsearch-9200",
+  "Name": "elasticsearch",
+  "Address": "{{ ansible_default_ipv4["address"] }}",
+  "Port": 9200,
+  "tags": ["elasticsearch"]
+}

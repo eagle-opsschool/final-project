@@ -1,0 +1,25 @@
+prometheus ansible_host=10.0.0.104 hostname=prometheus
+
+grafana ansible_host=10.0.0.105 hostname=grafana
+
+kibana ansible_host=10.0.0.106 hostname=kibana
+
+jenkins ansible_host=10.0.0.112 hostname=jenkins
+
+icinga-master ansible_host=10.0.0.113 hostname=icinga-master
+
+haproxy ansible_host=10.0.0.114 hostname=haproxy
+
+[consul]
+consul1 ansible_host=10.0.0.107 hostname=consul1
+consul2 ansible_host=10.0.0.108 hostname=consul2
+consul3 ansible_host=10.0.0.109 hostname=consul3
+
+[mysql]
+mysql-master ansible_host=10.0.0.110 mysql_type=master hostname=mysql-master
+mysql-slave ansible_host=10.0.0.111 mysql_type=slave hostname=mysql-slave
+
+[k8s]
+k8s-master ansible_host=10.0.0.101 k8s_type=master hostname=k8s-master
+k8s-slave1 ansible_host=10.0.0.102 k8s_type=slave hostname=k8s-slave1
+k8s-slave2 ansible_host=10.0.0.103 k8s_type=slave hostname=k8s-slave2

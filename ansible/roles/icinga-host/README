@@ -1,0 +1,3 @@
+This role is assigned to any host monitored by by icinga.
+It does not imply that an icinga daemon is running on that host (e.g. ASA, Windows).
+Handles creation of the basic host configuration.

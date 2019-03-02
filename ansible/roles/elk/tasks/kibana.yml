@@ -1,0 +1,22 @@
+---
+
+- name: Install nginx for kibana
+  apt: name=nginx state=latest
+  notify: Restart kibana
+
+- name: Set up kibana config
+  template: src=etc/kibana/kibana.yml dest=/etc/kibana/kibana.yml
+  notify: Restart kibana
+
+- name: Copy nginx server definitions
+  notify: Restart nginx
+  template: src=etc/nginx/sites-available/{{ item }} dest=/etc/nginx/sites-available/{{ item }}
+  with_items:
+  - kibana
+
+- name: Enable nginx server definitions
+  notify: Restart nginx
+  file: state=link src=../sites-available/{{ item }} dest=/etc/nginx/sites-enabled/{{ item }} force=yes
+  with_items:
+  - kibana
+

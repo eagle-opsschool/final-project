@@ -1,0 +1,23 @@
+---
+
+#- name: Install node-exporter
+#  apt:
+#    name: prometheus-node-exporter
+#    update_cache: yes
+#  notify: restart node-exporter
+
+- name: Install node-exporter
+  copy:
+    src: node_exporter
+    dest: /usr/bin/node-exporter
+    mode: 0755
+
+- name: Start node-exporter
+  shell: nohup /usr/bin/node-exporter &
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register
+

@@ -1,0 +1,90 @@
+---
+
+- hosts: consul
+  become: yes
+  roles:
+  - common
+  - consul
+  - filebeat
+  - node-exporter
+
+- hosts: icinga
+  become: yes
+  roles:
+  - common
+  - icinga-master
+  - filebeat
+  - node-exporter
+
+- hosts: consul
+  become: yes
+  roles:
+  - icinga-client
+
+- hosts: prometheus
+  become: yes
+  roles:
+  - common
+  - prometheus
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: grafana
+  become: yes
+  roles:
+  - common
+  - grafana
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: mysql
+  become: yes
+  roles:
+  - common
+  - mysql
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: k8s
+  become: yes
+  roles:
+  - common
+  - k8s
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: k8s-master
+  become: yes
+  roles:
+  - service-sync
+
+- hosts: haproxy
+  become: yes
+  roles:
+  - common
+  - haproxy
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: jenkins
+  become: yes
+  roles:
+  - common
+  - jenkins
+  - filebeat
+  - node-exporter
+  - icinga-client
+
+- hosts: kibana
+  become: yes
+  roles:
+  - common
+  - elk
+  - filebeat
+  - node-exporter
+  - icinga-client

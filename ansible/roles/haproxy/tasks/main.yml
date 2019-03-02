@@ -1,0 +1,19 @@
+---
+
+- name: Install haproxy
+  apt:
+    name: haproxy
+    update_cache: yes
+  notify: restart haproxy
+
+- name: Copy config file
+  template:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+  notify: restart haproxy
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register

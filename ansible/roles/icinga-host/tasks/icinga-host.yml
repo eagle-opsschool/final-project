@@ -1,0 +1,28 @@
+---
+- name: Set FQDN var if needed
+  local_action: set_fact ansible_hostname={{ ansible_ssh_host }}
+  when: ansible_hostname is not defined
+
+- name: Create host directory
+  delegate_to: "{{ icinga_ip }}"
+  file: path=/etc/icinga2/hosts.d/{{ ansible_hostname }} state=directory
+
+- name: Create client host config
+  delegate_to: "{{ icinga_ip }}"
+  template: src=host.conf dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host.conf
+  notify: Restart icinga master
+
+- name: Create host include dir
+  delegate_to: "{{ icinga_ip }}"
+  file: path=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host.include.d state=directory
+
+- name: Check if host-specific icinga config exists
+  local_action: stat path={{ playbook_dir}}/roles/icinga-host/templates/host-specific/{{ ansible_hostname }}
+  become: no
+  register: host_specific_config
+
+- name: Copy host-specific icinga config if exists
+  template: src=host-specific/{{ ansible_hostname }} dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host-specific.conf
+  delegate_to: "{{ icinga_master }}"
+  when: host_specific_config.stat.exists
+  notify: Restart icinga master

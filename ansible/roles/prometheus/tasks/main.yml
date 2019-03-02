@@ -1,0 +1,19 @@
+---
+
+- name: Install prometheus
+  apt:
+    name: prometheus
+    update_cache: yes
+  notify: restart prometheus
+
+- name: Copy config file
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+  notify: restart prometheus
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register

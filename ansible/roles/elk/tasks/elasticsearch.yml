@@ -1,0 +1,24 @@
+---
+
+- name: Enable elasticsearch service
+  service: name=elasticsearch enabled=yes
+  notify: Restart elasticsearch
+
+#- name: Copy elasticsearch defaults
+#  template: src=etc/default/elasticsearch dest=/etc/default/elasticsearch
+#  notify: Restart elasticsearch
+
+- name: Create elasticsearch data dir
+  file: name=/data/elasticsearch state=directory recurse=yes owner=elasticsearch
+  notify: Restart elasticsearch
+
+- name: Copy elasticsearch config
+  template: src=etc/elasticsearch/elasticsearch.yml dest=/etc/elasticsearch/elasticsearch.yml
+  notify: Restart elasticsearch
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register
+

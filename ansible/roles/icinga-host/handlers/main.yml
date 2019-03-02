@@ -1,0 +1,5 @@
+---
+- name: Restart icinga master
+  delegate_to: "{{ icinga_ip }}"
+  run_once: true
+  service: name=icinga2 state=restarted

@@ -1,0 +1,80 @@
+---
+
+- name: Copy consul registration json
+  template: src=payload-slave.json dest=/tmp/payload-slave.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload-slave.json http://{{ consul_ip }}:8500/v1/agent/service/register
+
+- name: Edit mysql.conf and enable replication
+  copy:
+    src: mysqld-slave.cnf
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+
+- name: Restart mysql
+  service: name=mysql state=restarted
+
+- name: stop MySQL on slave
+  service:
+    name: mysql
+    state: stopped
+
+- name: delete slave data
+  file:
+    path: /var/lib/mysql
+    state: absent
+
+- name: create /var/lib/mysql
+  file:
+    path: /var/lib/mysql
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0750
+
+- name: uncompress database dump
+  unarchive:
+    src: /tmp/mysql-backup/dump.tar.gz
+    dest: /var/lib/mysql
+    owner: mysql
+    group: mysql
+
+- name: delete local backup
+  delegate_to: localhost
+  file:
+    path: /tmp/mysql-backup/
+    state: absent
+
+- name: start MySQL on slave
+  service:
+    name: mysql
+    state: started
+
+- name: get binlog file
+  command: >-
+    sed -r 's/^(.*)\s[0-9]+$/\1/' /var/lib/mysql/xtrabackup_binlog_info
+  args:
+    warn: false
+  register: binlog_file
+
+- name: get binlog position
+  command: >-
+    sed -r 's/^.*\s([0-9]+)$/\1/' /var/lib/mysql/xtrabackup_binlog_info
+  args:
+    warn: false
+  register: binlog_position
+
+- name: configure MySQL slave process
+  mysql_replication:
+    master_host: "{{ mysql_master_ip }}"
+    master_user: "root"
+    master_password: "root"
+    master_log_file: "{{ binlog_file.stdout }}"
+    master_log_pos: "{{ binlog_position.stdout }}"
+    master_ssl: 0
+#    master_ssl_capath: /etc/ssl/certs
+    mode: changemaster
+
+- name: start MySQL slave process
+  mysql_replication:
+    mode: startslave

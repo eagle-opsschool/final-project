@@ -1,0 +1,5 @@
+---
+- import_tasks: icinga-common.yml
+  tags: icinga
+
+ 

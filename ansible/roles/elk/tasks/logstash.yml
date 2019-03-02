@@ -1,0 +1,18 @@
+---
+
+- name: Set up /etc/default/logstash
+  copy: src=logstash-default dest=/etc/default/logstash
+  notify: Restart logstash
+
+- name: Set up conf.d
+  copy: src=etc/logstash/conf.d dest=/etc/logstash/
+  notify: Restart logstash
+
+- name: Remove bloody unnecessary logstash conf files
+  file: name=/etc/logstash/logstash-sample.conf state=absent
+  notify: Restart logstash
+
+- name: Enable logstash service
+  service: name=logstash enabled=yes
+
+

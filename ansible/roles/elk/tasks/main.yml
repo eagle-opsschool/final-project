@@ -1,0 +1,31 @@
+---
+
+- name: Instal java (=dependencies)
+  apt:
+    name: openjdk-8-jre
+    update_cache: yes
+    state: present
+
+- name: Install ELK
+  apt:
+    deb: "{{ item }}"
+    update_cache: yes
+  ignore_errors: yes
+  with_items:
+  - https://artifacts.elastic.co/downloads/logstash/logstash-6.4.0.deb
+  - https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.4.0.deb
+  - https://artifacts.elastic.co/downloads/kibana/kibana-6.4.0-amd64.deb
+  notify:
+  - Restart elasticsearch
+  - Restart kibana
+  - Restart logstash
+
+- import_tasks: logstash.yml
+  tags: logstash,elk
+
+- import_tasks: elasticsearch.yml
+  tags: elasticsearch,elk
+
+- import_tasks: kibana.yml
+  tags: kibana,elk
+

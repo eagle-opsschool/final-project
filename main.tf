@@ -37,55 +37,69 @@ resource "aws_security_group" "nat" {
     name = "vpc_nat"
     description = "Allow traffic to pass from the private subnet to the internet"
 
-    ingress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["${aws_subnet.final_project_private_subnet.cidr_block}"]
-    }
-    ingress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["${aws_subnet.final_project_private_subnet.cidr_block}"]
-    }
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-    egress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["${aws_vpc.final_project_vpc.cidr_block}"]
-    }
-    egress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+#    ingress {
+#        from_port = 80
+#        to_port = 80
+#        protocol = "tcp"
+#        cidr_blocks = ["${aws_subnet.final_project_private_subnet.cidr_block}"]
+#    }
+#    ingress {
+#        from_port = 443
+#        to_port = 443
+#        protocol = "tcp"
+#        cidr_blocks = ["${aws_subnet.final_project_private_subnet.cidr_block}"]
+#    }
+#    ingress {
+#        from_port = 22
+#        to_port = 22
+#        protocol = "tcp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
+#    ingress {
+#        from_port = -1
+#        to_port = -1
+#        protocol = "icmp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
+
+#    egress {
+#        from_port = 80
+#        to_port = 80
+#        protocol = "tcp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
+#    egress {
+#        from_port = 443
+#        to_port = 443
+#        protocol = "tcp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
+#    egress {
+#        from_port = 22
+#        to_port = 22
+#        protocol = "tcp"
+#        cidr_blocks = ["${aws_vpc.final_project_vpc.cidr_block}"]
+#    }
+#    egress {
+#        from_port = -1
+#        to_port = -1
+#        protocol = "icmp"
+#        cidr_blocks = ["0.0.0.0/0"]
+#    }
 
     vpc_id = "${aws_vpc.final_project_vpc.id}"
 
@@ -179,12 +193,26 @@ resource "aws_security_group" "final_project_private_security_group" {
     name = "vpc_db"
     description = "Allow incoming database connections."
 
-    ingress { # MySQL
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        security_groups = ["${aws_security_group.final_project_public_security_group.id}"]
-    }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["${aws_security_group.final_project_public_security_group.id}"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+#    ingress { # MySQL
+#        from_port = 0
+#        to_port = 0
+#        protocol = "-1"
+#        security_groups = ["${aws_security_group.final_project_public_security_group.id}"]
+#    }
     vpc_id = "${aws_vpc.final_project_vpc.id}"
 
     tags {
@@ -507,8 +535,8 @@ resource "aws_instance" "haproxy" {
 
 resource "aws_instance" "k8s_master" {
   ami           = "ami-0f65671a86f061fcd"
-#  instance_type = "t2.micro"
-  instance_type = "t3.medium"
+  instance_type = "t2.micro"
+#  instance_type = "t3.medium"
   private_ip    = "10.0.0.101"
   key_name      = "${var.aws_key_name}"
 
@@ -544,17 +572,9 @@ resource "aws_instance" "k8s_master" {
   provisioner "remote-exec" {
     inline = [
       "chmod 600 /home/ubuntu/.ssh/id_rsa",
-      "cd ansible",
+      "git clone https://github.com/eagle-opsschool/final-project.git",
+      "cd final-project/ansible",
 #      "ansible-playbook site.yml",
     ]
   }
-
-#  provisioner "remote-exec" {
-#    inline = [
-#      "chmod 600 /home/ubuntu/.ssh/id_rsa",
-#      "git clone https://github.com/eagle-opsschool/mid-project.git",
-#      "cd mid-project/ansible",
-#      "ansible-playbook site.yml",
-#    ]
-#  }
 }

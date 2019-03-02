@@ -1,4 +1,4 @@
-prometheus ansible_host=10.0.0.104 hostname=prometheus
+prometheus ansible_host=10.0.1.104 hostname=prometheus
 
 grafana ansible_host=10.0.0.105 hostname=grafana
 
@@ -11,13 +11,13 @@ icinga-master ansible_host=10.0.0.113 hostname=icinga-master
 haproxy ansible_host=10.0.0.114 hostname=haproxy
 
 [consul]
-consul1 ansible_host=10.0.0.107 hostname=consul1
-consul2 ansible_host=10.0.0.108 hostname=consul2
-consul3 ansible_host=10.0.0.109 hostname=consul3
+consul1 ansible_host=10.0.1.107 hostname=consul1
+consul2 ansible_host=10.0.1.108 hostname=consul2
+consul3 ansible_host=10.0.1.109 hostname=consul3
 
 [mysql]
-mysql-master ansible_host=10.0.0.110 mysql_type=master hostname=mysql-master
-mysql-slave ansible_host=10.0.0.111 mysql_type=slave hostname=mysql-slave
+mysql-master ansible_host=10.0.1.110 mysql_type=master hostname=mysql-master
+mysql-slave ansible_host=10.0.1.111 mysql_type=slave hostname=mysql-slave
 
 [k8s]
 k8s-master ansible_host=10.0.0.101 k8s_type=master hostname=k8s-master

@@ -14,7 +14,7 @@
 - name: Ensure replication user exists on master.
   mysql_user:
     name: "root"
-    host: "10.0.0.111"
+    host: "{{ mysql_slave_ip }}"
     password: "root"
     priv: "*.*:REPLICATION SLAVE,REPLICATION CLIENT"
 

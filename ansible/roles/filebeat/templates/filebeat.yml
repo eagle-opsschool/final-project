@@ -8,8 +8,20 @@ filebeat:
       paths:
         - /var/log/syslog
         - /var/log/auth.log
-      document_type: syslog
+      document_type: system
     -
-#      paths:
-#       - /var/log/dummy/*
-#      document_type: dummy_exporter
+      paths:
+        - /var/log/haproxy
+      document_type: haproxy
+    -  
+      paths:
+        - /var/log/mysql/*
+      document_type: mysql
+    -  
+      paths:
+        - /var/log/mediawiki/
+      document_type: mediawiki
+    -   
+      paths:
+        - /var/lib/docker/containers/*/*.log
+      document_type: docker

@@ -197,7 +197,7 @@ resource "aws_security_group" "final_project_private_security_group" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["${aws_security_group.final_project_public_security_group.id}"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -562,11 +562,6 @@ resource "aws_instance" "k8s_master" {
   provisioner "file" {
     source      = "${var.aws_key_path}"
     destination = "/home/ubuntu/.ssh/id_rsa"
-  }
-  
-  provisioner "file" {
-    source      = "~/opsschool/final-project/ansible"
-    destination = "/home/ubuntu/"
   }
 
   provisioner "remote-exec" {

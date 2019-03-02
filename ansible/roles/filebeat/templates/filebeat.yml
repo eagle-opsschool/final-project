@@ -25,3 +25,8 @@ filebeat:
       paths:
         - /var/lib/docker/containers/*/*.log
       document_type: docker
+    -
+      paths:
+        - /var/lib/icinga2/*
+        - /var/lib/icinga2/*/*
+      document_type: icinga2

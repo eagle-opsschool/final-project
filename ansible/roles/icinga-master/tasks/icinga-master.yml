@@ -11,6 +11,17 @@
     - php-intl
 # notify: Restart icinga webui
 
+- name: Set PHP timezone
+  lineinfile:
+    path: /etc/php/7.0/apache2/php.ini
+    regexp: '^;date.timezone'
+    line: 'date.timezone = Asia/Jerusalem'
+
+- name: Force apache restart
+  service:
+    name: apache2
+    state: restarted
+
 - name: Set up icinga2.conf
   copy: src=icinga2.conf dest=/etc/icinga2/icinga2.conf
   notify: Restart icinga master

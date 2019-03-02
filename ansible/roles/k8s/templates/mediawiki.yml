@@ -33,7 +33,8 @@ spec:
     spec:
       containers:
       - name: mediawiki
-        image: wikimedia/mediawiki:1.30.0-wmf4
+#        image: wikimedia/mediawiki:1.30.0-wmf4
+        image: localhost:5000/mediawiki-1.30.0-wmf4
         ports:
         - containerPort: 80
         livenessProbe:

@@ -4,6 +4,16 @@
 #  docker_image:
 #    name: registry:2
 
+- name: Install pip
+  apt:
+    name: python-pip
+    state: present
+    update_cache: yes
+
+- name:
+  pip:
+    name: docker-py
+
 - name: Run the registry
   docker:
     name: registry
@@ -26,7 +36,7 @@
 
 - name: Remove local containers
   docker_image:
-    name: {{ item }}
+    name: "{{ item }}"
     state: absent
   with_items:
   - wikimedia/mediawiki:1.30.0-wmf4

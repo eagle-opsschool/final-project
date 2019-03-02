@@ -8,7 +8,7 @@
   - filebeat
   - node-exporter
 
-- hosts: icinga
+- hosts: icinga-master
   become: yes
   roles:
   - common

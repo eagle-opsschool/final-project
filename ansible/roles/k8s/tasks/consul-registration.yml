@@ -3,7 +3,7 @@
 - name: Find wikimedia port
   shell: kubectl get svc -o wide | grep wikimedia | grep -oE '[0-9]{5}'
   register: mediawiki_port
-  delegate_to: {{ k8s_master_ip }}
+  delegate_to: "{{ k8s_master_ip }}"
 
 - name: Figure out public ip addr
   shell: curl https://ipinfo.io/ip

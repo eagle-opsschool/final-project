@@ -128,6 +128,11 @@ resource "aws_eip" "nat" {
     vpc = true
 }
 
+#resource "aws_eip" "mysql" {
+#    instance = "${aws_instance.mysql_master.id}"
+#    vpc = true
+#}
+
 resource "aws_route_table" "final_project_public_subnet" {
     vpc_id = "${aws_vpc.final_project_vpc.id}"
 
@@ -416,15 +421,15 @@ resource "aws_instance" "consul3" {
 resource "aws_instance" "mysql_master" {
   ami           = "ami-0f65671a86f061fcd"
   instance_type = "t2.micro"
-  private_ip    = "10.0.1.110"
+  private_ip    = "10.0.0.110"
   key_name      = "${var.aws_key_name}"
 
   tags {
     Name = "mysql_master"
   }
 
-  vpc_security_group_ids      = ["${aws_security_group.final_project_private_security_group.id}"]
-  subnet_id                   = "${aws_subnet.final_project_private_subnet.id}"
+  vpc_security_group_ids      = ["${aws_security_group.final_project_public_security_group.id}"]
+  subnet_id                   = "${aws_subnet.final_project_public_subnet.id}"
   associate_public_ip_address = true
   source_dest_check           = false
 
@@ -535,8 +540,8 @@ resource "aws_instance" "haproxy" {
 
 resource "aws_instance" "k8s_master" {
   ami           = "ami-0f65671a86f061fcd"
-  instance_type = "t2.micro"
-#  instance_type = "t3.medium"
+#  instance_type = "t2.micro"
+  instance_type = "t3.medium"
   private_ip    = "10.0.0.101"
   key_name      = "${var.aws_key_name}"
 

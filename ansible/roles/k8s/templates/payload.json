@@ -1,7 +1,7 @@
 {
-  "ID": "{{ ansible_hostname }}-wikimedia-{{ wikimedia_port.output }}",
-  "Name": "wikimedia",
-  "Address": "{{ outside_ip.output }}",
-  "Port": "{{ wikimedia_port.output }}",
-  "tags": ["wikimedia"]
+  "ID": "{{ ansible_hostname }}-mediawiki-{{ mediawiki_port.stdout }}",
+  "Name": "mediawiki",
+  "Address": "{{ outside_addr.stdout }}",
+  "Port": {{ mediawiki_port.stdout }},
+  "tags": ["mediawiki"]
 }

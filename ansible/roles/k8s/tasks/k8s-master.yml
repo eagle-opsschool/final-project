@@ -4,7 +4,7 @@
 
 - name: K8S | Install Master | Create .kube directory
   file:
-    path: /home/ubuntu/.kube"
+    path: /home/ubuntu/.kube
     state: directory  
 
 - name: K8S | Install Master | Copy admin.conf file to /.kube/config

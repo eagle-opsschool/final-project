@@ -1,0 +1,33 @@
+---
+
+- name: Install ufw
+  apt:
+    name: ufw
+    update_cache: yes
+
+- name: Disable everything
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: Figure out public ip addr
+  shell: curl http://169.254.169.254/latest/meta-data/public-ipv4
+  delegate_to: 10.0.102
+  register: k8s_slave1_addr
+
+- name: Figure out public ip addr
+  shell: curl http://169.254.169.254/latest/meta-data/public-ipv4
+  delegate_to: 10.0.103
+  register: k8s_slave3_addr
+
+- ufw:
+    rule: allow
+    src: 10.0.0.0/8
+
+- ufw:
+    rule: allow
+    src: '{{ item }}'
+    port: 3306
+  with_items:
+    - {{ k8s_slave1_addr.stdout }}
+    - {{ k8s_slave2_addr.stdout }}

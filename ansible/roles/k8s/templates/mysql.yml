@@ -13,6 +13,6 @@ metadata:
  name: mysql-outside
 subsets:
  - addresses:
-     - ip: {{ mysql_outside_addr.output }}
+     - ip: {{ mysql_outside_addr.stdout }}
    ports:
      - port: 3306

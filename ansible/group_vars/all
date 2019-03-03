@@ -8,7 +8,7 @@ jenkins_ip: 10.0.0.112
 
 consul_ip: 10.0.1.109
 
-mysql_master_ip: 10.0.1.110
+mysql_master_ip: 10.0.0.110
 
 mysql_slave_ip: 10.0.1.111
 

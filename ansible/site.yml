@@ -47,6 +47,7 @@
   - filebeat
   - node-exporter
   - icinga-client
+  - ufw
 
 - hosts: k8s
   become: yes

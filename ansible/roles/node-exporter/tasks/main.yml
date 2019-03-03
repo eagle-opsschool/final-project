@@ -16,8 +16,8 @@
   shell: nohup /usr/bin/node-exporter &
 
 - name: Copy consul registration json
-  template: src=payload.json dest=/tmp/payload.json
+  template: src=payload.json dest=/tmp/payload-node-exporter.json
 
 - name: Register to consul
-  shell: curl -X PUT --data-binary @/tmp/payload.json http://{{ consul_ip }}:8500/v1/agent/service/register
+  shell: curl -X PUT --data-binary @/tmp/payload-node-exporter.json http://{{ consul_ip }}:8500/v1/agent/service/register
 

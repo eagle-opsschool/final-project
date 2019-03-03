@@ -16,7 +16,7 @@ consul2 ansible_host=10.0.1.108 hostname=consul2
 consul3 ansible_host=10.0.1.109 hostname=consul3
 
 [mysql]
-mysql-master ansible_host=10.0.1.110 mysql_type=master hostname=mysql-master
+mysql-master ansible_host=10.0.0.110 mysql_type=master hostname=mysql-master
 mysql-slave ansible_host=10.0.1.111 mysql_type=slave hostname=mysql-slave
 
 [k8s]

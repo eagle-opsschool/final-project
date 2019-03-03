@@ -12,7 +12,7 @@
 10.0.1.108 consul2
 10.0.1.109 consul3
 
-10.0.1.110 mysql-master
+10.0.0.110 mysql-master
 10.0.1.111 mysql-slave
 
 10.0.0.112 jenkins

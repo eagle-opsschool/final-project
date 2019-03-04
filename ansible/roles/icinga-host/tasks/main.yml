@@ -2,3 +2,5 @@
 # Specify sudo=yes since this role is included for Windows machines where sudo if off
 - import_tasks: icinga-host.yml
   tags: icinga
+  when: ansible_hostname != "icinga-master"
+

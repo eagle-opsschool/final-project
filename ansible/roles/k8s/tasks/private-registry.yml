@@ -1,0 +1,11 @@
+---
+- name: Create private registry file
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: Restart docker
+  service:
+    name: docker
+    state: restarted
+

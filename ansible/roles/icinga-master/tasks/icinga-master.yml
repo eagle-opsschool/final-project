@@ -19,7 +19,7 @@
     state: latest
     pkg:
     - icingaweb2
-    - php-pgsql
+    - php-mysql
     - php-imagick
     - php-gd
     - php-intl
@@ -50,6 +50,7 @@
   - conf.d/groups.conf
   - conf.d/apt.conf
   - conf.d/satellite.conf
+  - conf.d/notifications.conf
   - zones.d/README
   notify: Restart icinga master
 

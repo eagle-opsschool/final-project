@@ -1,5 +1,5 @@
 {
-  "ID": "{{ ansible_hostname }}-mediawiki-{{ mediawiki_port.stdout }}",
+  "ID": "{{ ansible_hostname }}-mediawiki",
   "Name": "mediawiki",
   "Address": "{{ outside_addr.stdout }}",
   "Port": {{ mediawiki_port.stdout }},

@@ -1,0 +1,15 @@
+- name: Create a new database with name mediawiki
+  mysql_db:
+    name: mediawiki
+    state: present
+
+- name: Copy the sql dump
+  copy:
+    src: mediawiki.sql
+    dest: /tmp/mediawiki.sql
+
+- name: Dump the mediawiki
+  mysql_db:
+    name: mediawiki
+    state: import
+    target: /tmp/mediawiki.sql

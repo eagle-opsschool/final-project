@@ -6,27 +6,23 @@
 - name: Create host directory
   delegate_to: "{{ icinga_ip }}"
   file: path=/etc/icinga2/hosts.d/{{ ansible_hostname }} state=directory
-  when: ansible_hostname != "icinga-master"
 
 - name: Create client host config
   delegate_to: "{{ icinga_ip }}"
   template: src=host.conf dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host.conf
   notify: Restart icinga master
-  when: ansible_hostname != "icinga-master"
 
 - name: Create host include dir
   delegate_to: "{{ icinga_ip }}"
   file: path=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host.include.d state=directory
-  when: ansible_hostname != "icinga-master"
 
 - name: Check if host-specific icinga config exists
   local_action: stat path={{ playbook_dir}}/roles/icinga-host/templates/host-specific/{{ ansible_hostname }}
   become: no
   register: host_specific_config
-  when: ansible_hostname != "icinga-master"
 
 - name: Copy host-specific icinga config if exists
   template: src=host-specific/{{ ansible_hostname }} dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host-specific.conf
   delegate_to: "{{ icinga_master }}"
-  when: host_specific_config.stat.exists and ansible_hostname != "icinga-master"
+  when: host_specific_config.stat.exists
   notify: Restart icinga master

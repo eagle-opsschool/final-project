@@ -7,6 +7,7 @@
 
 - name: Figure mysql public ip addr
   shell: curl http://169.254.169.254/latest/meta-data/public-ipv4
+  delegate_to: "{{ mysql_master_ip }}"
   register: mysql_outside_addr
 
 - name: Copy mysql's yml file

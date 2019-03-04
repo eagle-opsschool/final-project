@@ -36,7 +36,7 @@ spec:
       containers:
       - name: mediawiki
 #        image: wikimedia/mediawiki:1.30.0-wmf4
-        image: localhost:5000/mediawiki:{{ mediawiki_version }}
+        image: 10.0.0.101:5000/mediawiki:{{ mediawiki_version }}
         ports:
         - containerPort: 80
         livenessProbe:

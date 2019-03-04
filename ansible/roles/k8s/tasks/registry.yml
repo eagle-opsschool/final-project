@@ -15,7 +15,7 @@
     name: docker-py
 
 - name: Run the registry
-  docker:
+  docker_container:
     name: registry
     image: registry:2
     state: started

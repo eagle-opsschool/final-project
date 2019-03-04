@@ -10,3 +10,7 @@
 - import_tasks: mysql-slave.yml
   tags: mysql
   when: mysql_type == "slave"
+
+- import_tasks: mediawiki.yml
+  tags: mediawiki
+  when: mysql_type == "master"

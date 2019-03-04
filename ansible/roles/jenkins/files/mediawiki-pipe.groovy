@@ -10,6 +10,12 @@
     6. Optionally deploy to production and test
  */
 
+/*
+    Check if the last commit contained a change to our pod def.
+ */
+def checkFolderForDiffs(path) {
+
+}
 
 /*
     Run a curl against a given url
@@ -63,96 +69,66 @@ def curlTest (namespace, out) {
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
-
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
     }
 
-    // Some global default variables
-    environment {
-        IMAGE_NAME = 'acme'
-        TEST_LOCAL_PORT = 8817
-        DEPLOY_PROD = false
-        PARAMETERS_FILE = "${JENKINS_HOME}/parameters.groovy"
-    }
-
-    parameters {
-        string (name: 'GIT_BRANCH',           defaultValue: 'master',  description: 'Git branch to build')
-        booleanParam (name: 'DEPLOY_TO_PROD', defaultValue: false,     description: 'If build and tests are good, proceed and deploy to production without manual approval')
-
     // In this example, all is built and run from the master
     agent { node { label 'master' } }
-
+    
     // Pipeline stages
     stages {
-
         ////////// Step 1 //////////
         stage('Git clone and setup') {
             steps {
-                git branch: "master",
-                        //credentialsId: 'eldada-bb',
-                        url: 'https://github.com/eagle-opsschool/final-project'
+                echo "Pulling from git"
+                sh "git clone https://github.com/eagle-opsschool/final-project.git"
+
+                echo "Checking if there were changes since last commit."
+                // git diff will return 1 for changes (failure) which is caught in catch, or 0 meaning no changes 
+                try {
+                    sh "cd final-project/ansible; git diff --quiet --exit-code HEAD~1..HEAD group_vars/k8s"//roles/k8s/templates/mediawiki.yml"
+                    return false
+                } catch (err) {
+                    return true
+                }
+                //checkFolderForDiffs()
+
+                ID = "mediawiki-test-${DOCKER_TAG}"
             }
         }
 
         ////////// Step 2 //////////
         stage('Build and tests') {
             steps {
-                echo "Building application and Docker image"
-                sh "${WORKSPACE}/build.sh --build --registry ${DOCKER_REG} --tag ${DOCKER_TAG} --docker_usr ${DOCKER_USR} --docker_psw ${DOCKER_PSW}"
+                echo "Downloading required mediawiki to our private registy"
+                sh "cd ~/final-project/ansible; ansible-playbook site.yml -l k8s-master -t registry"
+                   
+//                    echo "Buildind application and Docker image"
+//                    sh "ssh ubuntu@10.0.0.101 cd ~/final-project/ansible && "
 
-                echo "Running tests"
-
-                // Kill container in case there is a leftover
-                sh "[ -z \"\$(docker ps -a | grep ${ID} 2>/dev/null)\" ] || docker rm -f ${ID}"
-
-                echo "Starting ${IMAGE_NAME} container"
-                sh "docker run --detach --name ${ID} --rm --publish ${TEST_LOCAL_PORT}:80 ${DOCKER_REG}/${IMAGE_NAME}:${DOCKER_TAG}"
+                echo "Starting container for test" //TODO
+                sh "docker run --detach --name ${ID} --rm --publish 56432:80 localhost:5000/mediawiki:{{ mediawiki_version }}:${DOCKER_TAG}"
 
                 script {
-                    host_ip = sh(returnStdout: true, script: '/sbin/ip route | awk \'/default/ { print $3 ":${TEST_LOCAL_PORT}" }\'')
+                    host_ip = sh(returnStdout: true, script: '/sbin/ip route | awk \'/default/ { print $3 ":56432" }\'')
                 }
             }
         }
 
-        // Run the 3 tests on the currently running ACME Docker container
+        // Run the test on the currently running ACME Docker container
         stage('Local tests') {
-            parallel {
-                stage('Curl http_code') {
-                    steps {
-                        curlRun ("http://${host_ip}", 'http_code')
-                    }
-                }
-                stage('Curl total_time') {
-                    steps {
-                        curlRun ("http://${host_ip}", 'total_time')
-                    }
-                }
-                stage('Curl size_download') {
-                    steps {
-                        curlRun ("http://${host_ip}", 'size_download')
-                    }
-                }
-            }
-        }
-
-        ////////// Step 3 //////////
-        stage('Publish Docker and Helm') {
             steps {
+                curlRun ("${host_ip}", 'http_code')
                 echo "Stop and remove container"
                 sh "docker stop ${ID}"
-
-                echo "Pushing ${DOCKER_REG}/${IMAGE_NAME}:${DOCKER_TAG} image to registry"
-                sh "${WORKSPACE}/build.sh --push --registry ${DOCKER_REG} --tag ${DOCKER_TAG} --docker_usr ${DOCKER_USR} --docker_psw ${DOCKER_PSW}"
-
-                echo "Packing helm chart"
-                sh "${WORKSPACE}/build.sh --pack_helm --push_helm --helm_repo ${HELM_REPO} --helm_usr ${HELM_USR} --helm_psw ${HELM_PSW}"
             }
+            
         }
 
         ////////// Step 4 //////////
-        stage('Deploy to dev') {
+        stage('Deploy test version') {
             steps {
                 script {
                     namespace = 'development'
@@ -160,106 +136,45 @@ pipeline {
                     echo "Deploying application ${ID} to ${namespace} namespace"
                     createNamespace (namespace)
 
-                    // Remove release if exists
-                    helmDelete (namespace, "${ID}")
-
-                    // Deploy with helm
                     echo "Deploying"
-                    helmInstall(namespace, "${ID}")
                 }
             }
         }
 
         // Run the 3 tests on the deployed Kubernetes pod and service
-        stage('Dev tests') {
-            parallel {
-                stage('Curl http_code') {
-                    steps {
-                        curlTest (namespace, 'http_code')
-                    }
-                }
-                stage('Curl total_time') {
-                    steps {
-                        curlTest (namespace, 'time_total')
-                    }
-                }
-                stage('Curl size_download') {
-                    steps {
-                        curlTest (namespace, 'size_download')
-                    }
-                }
+        stage('Test test vesion') {
+            steps {
+                 curlTest (namespace, 'http_code')
             }
         }
 
 
         ////////// Step 6 //////////
-        // Waif for user manual approval, or proceed automatically if DEPLOY_TO_PROD is true
-        stage('Go for Production?') {
-            when {
-                allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
-                    environment name: 'DEPLOY_TO_PROD', value: 'false'
-                }
-            }
-
-            steps {
-                // Prevent any older builds from deploying to production
-                milestone(1)
-                input 'Proceed and deploy to Production?'
-                milestone(2)
-
-                script {
-                    DEPLOY_PROD = true
-                }
-            }
-        }
-
-        stage('Deploy to Production') {
-            when {
-                anyOf {
-                    expression { DEPLOY_PROD == true }
-                    environment name: 'DEPLOY_TO_PROD', value: 'true'
-                }
-            }
-
+        stage('Deploy production version') {
             steps {
                 script {
-                    DEPLOY_PROD = true
                     namespace = 'production'
 
                     echo "Deploying application ${IMAGE_NAME}:${DOCKER_TAG} to ${namespace} namespace"
                     createNamespace (namespace)
 
-                    // Deploy with helm
                     echo "Deploying"
-                    helmInstall (namespace, "${ID}")
                 }
             }
         }
 
         // Run the 3 tests on the deployed Kubernetes pod and service
         stage('Production tests') {
-            when {
-                expression { DEPLOY_PROD == true }
+            steps {
+                curlRun ({{ haproxy_ip }}, 'http_code')
             }
-
-            parallel {
-                stage('Curl http_code') {
-                    steps {
-                        curlTest (namespace, 'http_code')
-                    }
-                }
-                stage('Curl total_time') {
-                    steps {
-                        curlTest (namespace, 'time_total')
-                    }
-                }
-                stage('Curl size_download') {
-                    steps {
-                        curlTest (namespace, 'size_download')
-                    }
-                }
-            }
+        }
+    }
+    
+	post {
+        always {
+            echo "Deleting git repo"
+            sh "rm -rf final-project"
         }
     }
 }

@@ -36,7 +36,7 @@ spec:
       containers:
       - name: mediawiki
 #        image: wikimedia/mediawiki:1.30.0-wmf4
-        image: localhost:5000/mediawiki-1.30.0-wmf2
+        image: localhost:5000/mediawiki:{{ mediawiki_version }}
         ports:
         - containerPort: 80
         livenessProbe:
@@ -57,7 +57,8 @@ spec:
           #failureThreshold: 3
         env:
           - name: MEDIAWIKI_SITE_SERVER
-            value: 'configured-in-CustomSettings.php'
+#            value: 'configured-in-CustomSettings.php'
+            value: 'opsschool'
           - name: MEDIAWIKI_SITE_NAME
             value: opsschool
           - name: MEDIAWIKI_SITE_LANG

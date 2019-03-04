@@ -4,7 +4,7 @@
   tags: docker
 
 - import_tasks: registry.yml
-  tags: docker
+  tags: [ 'docker', 'registry']
   when: k8s_type == "master"
 
 - import_tasks: k8s-common.yml

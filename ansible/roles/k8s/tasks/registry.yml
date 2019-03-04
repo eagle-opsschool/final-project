@@ -25,13 +25,13 @@
 
 - name: Pull wikimedia container
   docker_image:
-    name: wikimedia/mediawiki:1.30.0-wmf4
+    name: wikimedia/mediawiki:{{ mediawiki_version }}
 
 - name: Tag and push wikimedia container to private registy
   docker_image:
-    name: wikimedia/mediawiki:1.30.0-wmf4
+    name: wikimedia/mediawiki:{{ mediawiki_version }}
     repository: localhost:5000/mediawiki
-    tag: 1.30.0-wmf4
+    tag: {{ mediawiki_version }}
     push: yes
 
 - name: Remove local containers
@@ -39,4 +39,4 @@
     name: "{{ item }}"
     state: absent
   with_items:
-  - wikimedia/mediawiki:1.30.0-wmf4
+  - wikimedia/mediawiki:{{ mediawiki_version }}

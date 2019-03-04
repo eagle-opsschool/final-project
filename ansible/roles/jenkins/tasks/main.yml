@@ -32,10 +32,26 @@
     name: jenkins
     state: stopped
 
-- name: Copy jenkins config dir
-  unarchive:
-    src: jenkins.tar.gz
-    dest: /var/lib/
+#- name: Copy jenkins config dir
+#  unarchive:
+#    src: jenkins.tar.gz
+#    dest: /var/lib/
+
+- name: Verify jenkins has ssh directory
+  file:
+    path: /var/lib/jenkins/.ssh/
+    state: directory
+    owner: jenkins
+    group: jenkins
+    state: directory
+
+- name: Copy ssh key to jenkins
+  copy:
+    src: /home/ubuntu/.ssh/id_rsa
+    dest: /var/lib/jenkins/.ssh/id_rsa
+    owner: jenkins
+    group: jenkins
+    mode: 0600
 
 - name: Start Jenkins service and enable on boot
   service:

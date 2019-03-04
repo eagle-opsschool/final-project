@@ -16,7 +16,7 @@
 10.0.1.111 mysql-slave
 
 10.0.0.112 jenkins
-10.0.0.113 icinga
+10.0.0.113 icinga icinga-master
 10.0.0.114 haproxy
 
 # The following lines are desirable for IPv6 capable hosts

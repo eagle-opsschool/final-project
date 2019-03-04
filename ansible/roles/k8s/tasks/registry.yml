@@ -31,7 +31,7 @@
   docker_image:
     name: wikimedia/mediawiki:{{ mediawiki_version }}
     repository: localhost:5000/mediawiki
-    tag: {{ mediawiki_version }}
+    tag: "{{ mediawiki_version }}"
     push: yes
 
 - name: Remove local containers

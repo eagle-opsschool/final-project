@@ -26,8 +26,8 @@
 
 - ufw:
     rule: allow
-    src: '{{ item }}'
+    src: "{{ item }}"
     port: 3306
   with_items:
-    - {{ k8s_slave1_addr.stdout }}
-    - {{ k8s_slave2_addr.stdout }}
+    - "{{ k8s_slave1_addr.stdout }}"
+    - "{{ k8s_slave2_addr.stdout }}"

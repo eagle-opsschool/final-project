@@ -112,6 +112,7 @@ resource "aws_instance" "nat" {
     ami = "ami-882914ed" # this is a special ami preconfigured to do NAT
     availability_zone = "us-east-2b"
     instance_type = "t2.micro"
+    private_ip    = "10.0.0.100"
     key_name = "${var.aws_key_name}"
     vpc_security_group_ids = ["${aws_security_group.nat.id}"]
     subnet_id = "${aws_subnet.final_project_public_subnet.id}"

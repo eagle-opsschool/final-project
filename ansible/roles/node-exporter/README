@@ -1,0 +1,5 @@
+This role:
+1. Installs node-exporter.
+2. Registers to consul.
+
+TODO: node-exporter is installed from a predownloaded binary and not an official repos due to problems in grafana's dashboard. Need to find another dashboard and change the installtion.

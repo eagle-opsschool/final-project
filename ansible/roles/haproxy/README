@@ -1,0 +1,4 @@
+This role:
+1. Install haproxy.
+2. Configures it to be a load-balancer to the mediawiki service using consul.
+3. Registers to consul.

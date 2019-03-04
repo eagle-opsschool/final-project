@@ -1,0 +1,6 @@
+This role:
+1. Installs docker.
+2. Installs kubernetes.
+3. Activates a kubernets master on k8s_type=master machine.
+4. Join k8s_type=slave machines to the master as slaves.
+

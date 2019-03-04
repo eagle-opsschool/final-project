@@ -1,0 +1,5 @@
+This role:
+1. Installs filebeast.
+2. Configure it to collect logs and send to ELK machine.
+
+TODO: Configure logs that are collected per machine.

@@ -1,0 +1,4 @@
+This role:
+1. Installs jenkins.
+2. Copies our ssh key to allow jenkins to ssh to other machines.
+3. Add a pipeline job of A/B deployment of mediawiki to our k8s cluster.

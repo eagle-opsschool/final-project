@@ -1,0 +1,5 @@
+This role:
+1. Installs grafana.
+2. Configures it to use our prometheus server.
+3. Pushes node-exporter and mysql-exporter dashboards.
+4. Registers to consul.

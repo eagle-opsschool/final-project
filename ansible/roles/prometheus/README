@@ -1,0 +1,4 @@
+This role:
+1. Installs promethues.
+2. Configures prometheus to pull services registered in consul.
+3. Registers to consul.

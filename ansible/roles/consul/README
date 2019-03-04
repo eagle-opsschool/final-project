@@ -1,0 +1,3 @@
+This role:
+1. Install consul master using a script by @burdandrei.
+2. Join the masters to a three-way.

@@ -1,0 +1,6 @@
+This role:
+1. Installs logstash.
+2. Installs elasticsearch.
+3. Installs Kibana.
+4. Configures them.
+5. Registers to consul.

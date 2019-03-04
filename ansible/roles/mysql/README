@@ -1,0 +1,6 @@
+This role:
+1. Install MySQL.
+2. Installs mysql-exporter and registers to consul.
+3. Adds needed users and gives them permission.
+4. Copies the master state to the slave and configures a master-slave relation on mediawiki database.
+5. Registers the master and the slave to consul.

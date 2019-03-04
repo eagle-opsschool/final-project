@@ -1,7 +1,15 @@
 ---
 - name: Install icinga2
-  apt: name=icinga2 update_cache=yes
+  apt:
+    name: {{ item }}
+    update_cache: yes
+  with_items:
+  - icinga2
+  - icinga2-ido-mysql
   notify: Restart icinga client
+
+- name: Tell icinga2 to use ido-mysql
+  shell: icinga2 feature enable ido-mysql command
 
 - name: Install some plugin dependencies
   apt:

@@ -1,0 +1,25 @@
+---
+
+- name: Install MySQL
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - libmysqlclient-dev
+    - python-mysqldb
+    - mysql-server
+    - mysql-client
+
+- name: Start the MySQL service
+  service: name=mysql state=started
+
+- name: Create deploy user for mysql
+  mysql_user: user="icinga" host="localhost" password=icinga priv=icinga.*:ALL,GRANT
+
+#- name: Copy .my.cnf file with root password credentials
+#  template: src=templates/.my.cnf dest=/etc/mysql/my.cnf owner=root mode=0600
+
+- name: Update mysql root password for all root accounts
+  mysql_user: name=root host={{ item }} password=root
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost

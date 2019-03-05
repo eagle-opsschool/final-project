@@ -1,4 +1,7 @@
 ---
+- import_tasks: install-mysql.yml
+  tags: icinga
+
 - import_tasks: icinga-master.yml
   tags: icinga
  

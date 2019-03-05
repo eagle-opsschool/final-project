@@ -13,8 +13,13 @@
 /*
     Check if the last commit contained a change to our pod def.
  */
-def checkFolderForDiffs(path) {
-
+def checkFolderForDiffs() {
+               try {
+                    sh "cd ~/workspace/mediawiki/final-project/ansible; git diff --quiet --exit-code HEAD~1..HEAD group_vars/k8s"//roles/k8s/templates/mediawiki.yml"
+                    return false
+                } catch (err) {
+                    return true
+                }
 }
 
 /*
@@ -87,14 +92,11 @@ pipeline {
 
                 echo "Checking if there were changes since last commit."
                 // git diff will return 1 for changes (failure) which is caught in catch, or 0 meaning no changes 
-                try {
-                    sh "cd ~/final-project/ansible; git diff --quiet --exit-code HEAD~1..HEAD group_vars/k8s"//roles/k8s/templates/mediawiki.yml"
-                    return false
-                } catch (err) {
-                    return true
-                }
-                //checkFolderForDiffs()
-                ID = "10.0.0.101:5000/mediawiki:${mediawiki_version}"
+ 
+                checkFolderForDiffs()
+                script {
+                    ID = "10.0.0.101:5000/mediawiki-docker"
+                }    
             }
         }
 
@@ -102,12 +104,12 @@ pipeline {
         stage('Build and tests') {
             steps {
                 echo "Downloading required mediawiki to our private registy"
-                sh "cd ~/final-project/ansible; ansible-playbook site.yml -l k8s-master -t registry"
+                sh "cd ~/workspace/mediawiki/final-project/ansible; ansible-playbook site.yml -l k8s -t registry"
                    
 //                    echo "Buildind application and Docker image"
 //                    sh "ssh ubuntu@10.0.0.101 cd ~/final-project/ansible && "
                 script {
-                    mediawiki_version = sh(returnStdout: true, script: 'cat ansible/group_vars/k8s |awk '{print $2}'')
+                    mediawiki_version = sh(returnStdout: true, script: "cat ansible/group_vars/k8s |awk '{print \$2}'")
                 }
 
                 echo "Starting container for test" //TODO Dockerfile
@@ -135,7 +137,7 @@ pipeline {
         stage('Deploy test version') {
             steps {
                 echo "Deploying application ${ID} to test"
-                sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t test"
+                sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t test"
             }
         }
 
@@ -149,7 +151,7 @@ pipeline {
         stage('Stop test vesion') {
             steps {
                 echo "Stoping test deployment"
-                sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t stop-test"
+                sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t stop-test"
             }
         }
 
@@ -157,13 +159,13 @@ pipeline {
         stage('Deploy production version') {
             steps {
                echo "Deploying in production."
-               sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t mediawiki"
+               sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t mediawiki"
             }
         }
 
         stage('Production tests') {
             steps {
-                curlRun (18.217.78.202, 'http_code')
+                curlRun ('18.217.78.202', 'http_code')
             }
         }
     }
@@ -171,7 +173,7 @@ pipeline {
 	post {
         always {
             echo "Deleting git repo"
-            sh "rm -rf ~/final-project"
+            sh "rm -rf ~/workspace/mediawiki/final-project"
         }
     }
 }

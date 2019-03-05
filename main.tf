@@ -468,7 +468,7 @@ resource "aws_instance" "mysql_slave" {
 }
 
 resource "aws_instance" "jenkins" {
-  ami           = "ami-0653e888ec96eab9b"
+  ami           = "ami-0f65671a86f061fcd"
   instance_type = "t2.micro"
   private_ip    = "10.0.0.112"
   key_name      = "${var.aws_key_name}"

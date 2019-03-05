@@ -3,4 +3,3 @@
 - import_tasks: icinga-host.yml
   tags: icinga
   when: ansible_hostname != "icinga-master"
-

@@ -27,6 +27,12 @@
     state: present
     update_cache: yes
 
+- name: Install ansible
+  apt:
+    name: ansible
+    state: present
+    update_cache: yes
+
 - name: Verify Jenkins service is down
   service:
     name: jenkins

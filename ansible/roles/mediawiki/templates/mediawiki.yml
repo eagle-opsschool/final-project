@@ -3,7 +3,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mediawiki-service
-  role: {{ mediawiki_version }}
 spec:
   type: NodePort
   ports:

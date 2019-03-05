@@ -23,6 +23,6 @@
 
 - name: Copy host-specific icinga config if exists
   template: src=host-specific/{{ ansible_hostname }} dest=/etc/icinga2/hosts.d/{{ ansible_hostname }}/host-specific.conf
-  delegate_to: "{{ icinga_master }}"
+  delegate_to: 10.0.0.113
   when: host_specific_config.stat.exists
   notify: Restart icinga master

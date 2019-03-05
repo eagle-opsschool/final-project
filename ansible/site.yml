@@ -57,11 +57,11 @@
   - filebeat
   - node-exporter
   - icinga-client
-
-- hosts: k8s-master
-  become: yes
-  roles:
   - mediawiki
+
+#- hosts: k8s-master
+#  become: yes
+#  roles:
 #  - service-sync
 
 - hosts: haproxy

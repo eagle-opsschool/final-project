@@ -324,8 +324,8 @@ resource "aws_instance" "grafana" {
 
 resource "aws_instance" "kibana" {
   ami           = "ami-0f65671a86f061fcd"
-  #instance_type = "t3.medium"
-  instance_type = "t2.micro"
+  instance_type = "t3.medium"
+  #instance_type = "t2.micro"
   private_ip    = "10.0.0.106"
   key_name      = "${var.aws_key_name}"
 
@@ -574,8 +574,8 @@ resource "aws_instance" "k8s_master" {
     inline = [
       "chmod 600 /home/ubuntu/.ssh/id_rsa",
       "git clone https://github.com/eagle-opsschool/final-project.git",
-      "cd final-project/ansible",
-      "ansible-playbook site.yml",
+      "cd /home/ubuntu/final-project/ansible && ansible-playbook site.yml",
+#      "ansible-playbook site.yml",
     ]
   }
 }

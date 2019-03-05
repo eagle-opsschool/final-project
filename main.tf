@@ -563,7 +563,17 @@ resource "aws_instance" "k8s_master" {
     private_key = "${file(var.aws_key_path)}"
   }
 
-  user_data		= "${file("user_data_ansible.conf")}"
+#  user_data		= "${file("user_data_ansible.conf")}"
+
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo echo StrictHostKeyChecking no >> /etc/ssh/ssh_config",
+      "sudo apt-get -y update",
+      "sudo apt-get -y update",
+      "sudo apt-get -y install ansible",
+    ]
+  }
 
   provisioner "file" {
     source      = "${var.aws_key_path}"
@@ -574,8 +584,18 @@ resource "aws_instance" "k8s_master" {
     inline = [
       "chmod 600 /home/ubuntu/.ssh/id_rsa",
       "git clone https://github.com/eagle-opsschool/final-project.git",
-      "cd /home/ubuntu/final-project/ansible && ansible-playbook site.yml",
-#      "ansible-playbook site.yml",
+      "cd /home/ubuntu/final-project/ansible",
+      "ansible-playbook site.yml",
     ]
   }
+
+#  provisioner "remote-exec" {
+#    inline = [
+#      "sudo echo StrictHostKeyChecking no >> /etc/ssh/ssh_config",
+#      "chmod 600 /home/ubuntu/.ssh/id_rsa",
+#      "git clone https://github.com/eagle-opsschool/mid-project.git",
+#      "cd mid-project/ansible",
+#      "ansible-playbook site.yml",
+#    ]
+#  }
 }

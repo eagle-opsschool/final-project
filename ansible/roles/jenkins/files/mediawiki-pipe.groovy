@@ -94,6 +94,7 @@ pipeline {
                     return true
                 }
                 //checkFolderForDiffs()
+                ID = "10.0.0.101:5000/mediawiki:${mediawiki_version}"
             }
         }
 
@@ -133,7 +134,7 @@ pipeline {
         ////////// Step 4 //////////
         stage('Deploy test version') {
             steps {
-                echo "Deploying application ${ID} to ${namespace} namespace"
+                echo "Deploying application ${ID} to test"
                 sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t test"
             }
         }
@@ -147,7 +148,7 @@ pipeline {
         
         stage('Stop test vesion') {
             steps {
-                echo "Deploying application ${ID} to ${namespace} namespace"
+                echo "Stoping test deployment"
                 sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t stop-test"
             }
         }
@@ -155,14 +156,14 @@ pipeline {
         ////////// Step 6 //////////
         stage('Deploy production version') {
             steps {
-               echo "Deploying application ${ID} to ${namespace} namespace"
+               echo "Deploying in production."
                sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t mediawiki"
             }
         }
 
         stage('Production tests') {
             steps {
-                curlRun ({{ haproxy_ip }}, 'http_code')
+                curlRun (18.217.78.202, 'http_code')
             }
         }
     }

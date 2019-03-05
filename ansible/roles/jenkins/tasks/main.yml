@@ -65,4 +65,6 @@
     state: started
     enabled: yes
 
+- import_tasks: private-registry.yml
+
 - import_tasks: docker.yml

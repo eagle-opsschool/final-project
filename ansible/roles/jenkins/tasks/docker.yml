@@ -33,10 +33,13 @@
 
 - name: Docker | Install Docker | Add Docker group to local user
   user:
-    name: ubuntu
+    name: "{{ item }}"
     comment: "add user to docker group"
     groups: docker
     append: yes
+  with_items:
+  - ubuntu
+  - jenkins
 
 - name: Docker | Install Docker | Enable Docker service at boot
   systemd:

@@ -8,6 +8,10 @@
   tags: [ 'never', 'test']
   when: k8s_type == "master"
 
+- import_tasks: consul-registration-test.yml
+  tags: [ 'never', 'test']
+  when: k8s_type == "slave"
+
 - import_tasks: stop-the-app-test.yml
   tags: [ 'never', 'stop-test']
   when: k8s_type == "master"

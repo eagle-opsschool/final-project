@@ -95,7 +95,7 @@ pipeline {
  
                 checkFolderForDiffs()
                 script {
-                    ID = "10.0.0.101:5000/mediawiki-docker"
+                    ID = "mediawiki-docker"
                 }    
             }
         }
@@ -114,7 +114,7 @@ pipeline {
 
                 echo "Starting container for test" //TODO Dockerfile
                 sh "docker pull 10.0.0.101:5000/mediawiki:${mediawiki_version}"
-                sh "docker run --detach --name ${ID} --rm --publish 56432:80 10.0.0.101:5000/mediawiki:${mediawiki_version}"
+                sh "docker run --detach --name ${ID} -e MEDIAWIKI_DB_USER=media -e MEDIAWIKI_DB_PASSWORD=media -e MEDIAWIKI_DB_HOST=10.0.0.110 --rm --publish 56432:80 10.0.0.101:5000/mediawiki:${mediawiki_version}"
 
                 script {
                     host_ip = sh(returnStdout: true, script: '/sbin/ip route | awk \'/default/ { print $3 ":56432" }\'')
@@ -126,7 +126,8 @@ pipeline {
         stage('Local tests') {
             steps {
                 echo "Check if responding to curl"
-                curlRun ("${host_ip}", 'http_code')
+                sh "sleep 10 && curl -sf localhost:56432 >/dev/null"
+                //curlRun ("${host_ip}", 'http_code')
                 echo "Stop and remove container"
                 sh "docker stop ${ID}"
             }
@@ -137,7 +138,7 @@ pipeline {
         stage('Deploy test version') {
             steps {
                 echo "Deploying application ${ID} to test"
-                sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t test"
+                sh "cd ~/workspace/mediawiki/final-project/ansible; ansible-playbook site.yml -l k8s -t test"
             }
         }
 
@@ -151,7 +152,7 @@ pipeline {
         stage('Stop test vesion') {
             steps {
                 echo "Stoping test deployment"
-                sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t stop-test"
+                sh "cd ~/workspace/mediawiki/final-project/ansible; ansible-playbook site.yml -l k8s -t stop-test"
             }
         }
 
@@ -159,7 +160,7 @@ pipeline {
         stage('Deploy production version') {
             steps {
                echo "Deploying in production."
-               sh "cd ~/workspace/mediawiki/final-project/ansibe; ansible-playbook site.yml -l k8s -t mediawiki"
+               sh "cd ~/workspace/mediawiki/final-project/ansible; ansible-playbook site.yml -l k8s -t mediawiki"
             }
         }
 

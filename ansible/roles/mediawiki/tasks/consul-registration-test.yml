@@ -1,0 +1,17 @@
+---
+
+- name: Find wikimedia port
+  shell: kubectl get all | grep "service/mediawiki-test-service" | grep -oE '[0-9]{5}'
+  register: mediawiki_test_port
+  become_user: ubuntu
+  delegate_to: "{{ k8s_master_ip }}"
+
+- name: Figure out public ip addr
+  shell: curl http://169.254.169.254/latest/meta-data/public-ipv4
+  register: outside_addr
+
+- name: Copy consul registration json
+  template: src=payload.json dest=/tmp/payload-mediawiki-test.json
+
+- name: Register to consul
+  shell: curl -X PUT --data-binary @/tmp/payload-mediawiki-test.json http://{{ consul_ip }}:8500/v1/agent/service/register

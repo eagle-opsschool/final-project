@@ -575,7 +575,7 @@ resource "aws_instance" "k8s_master" {
       "chmod 600 /home/ubuntu/.ssh/id_rsa",
       "git clone https://github.com/eagle-opsschool/final-project.git",
       "cd final-project/ansible",
-#      "ansible-playbook site.yml",
+      "ansible-playbook site.yml",
     ]
   }
 }

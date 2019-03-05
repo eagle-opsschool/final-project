@@ -105,9 +105,13 @@ pipeline {
                    
 //                    echo "Buildind application and Docker image"
 //                    sh "ssh ubuntu@10.0.0.101 cd ~/final-project/ansible && "
+                script {
+                    mediawiki_version = sh(returnStdout: true, script: 'cat ansible/group_vars/k8s |awk '{print $2}'')
+                }
 
-                echo "Starting container for test" //TODO
-                sh "docker run --detach --name ${ID} --rm --publish 56432:80 localhost:5000/mediawiki:{{ mediawiki_version }}:${DOCKER_TAG}"
+                echo "Starting container for test" //TODO Dockerfile
+                sh "docker pull 10.0.0.101:5000/mediawiki:${mediawiki_version}"
+                sh "docker run --detach --name ${ID} --rm --publish 56432:80 10.0.0.101:5000/mediawiki:${mediawiki_version}"
 
                 script {
                     host_ip = sh(returnStdout: true, script: '/sbin/ip route | awk \'/default/ { print $3 ":56432" }\'')
@@ -118,6 +122,7 @@ pipeline {
         // Run the test on the currently running ACME Docker container
         stage('Local tests') {
             steps {
+                echo "Check if responding to curl"
                 curlRun ("${host_ip}", 'http_code')
                 echo "Stop and remove container"
                 sh "docker stop ${ID}"

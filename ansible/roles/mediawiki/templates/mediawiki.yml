@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mediawiki-service
+  role: {{ mediawiki_version }}
 spec:
   type: NodePort
   ports:
@@ -16,7 +17,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mediawiki-deploy
+  name: mediawiki-deploy-{{ mediawiki_version }}
 spec:
   selector:
     matchLabels:

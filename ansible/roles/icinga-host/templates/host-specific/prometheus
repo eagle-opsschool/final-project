@@ -1,0 +1,10 @@
+object Service "prometheus" {
+	import "generic-service"
+	host_name = "{{ansible_hostname }}"
+	display_name = "prometheus"
+	check_command = "procs"
+	vars.procs_argument = "prometheus"
+	vars.procs_critical = "1:1"
+	vars.procs_warning = "1:1"
+	command_endpoint = "{{ansible_hostname }}"
+}

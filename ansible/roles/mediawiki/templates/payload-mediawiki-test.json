@@ -2,6 +2,6 @@
   "ID": "{{ ansible_hostname }}-mediawikitest",
   "Name": "mediawikitest",
   "Address": "{{ outside_addr.stdout }}",
-  "Port": {{ mediawiki_port.stdout }},
+  "Port": {{ mediawiki_test_port.stdout }},
   "tags": ["mediawikitest"]
 }

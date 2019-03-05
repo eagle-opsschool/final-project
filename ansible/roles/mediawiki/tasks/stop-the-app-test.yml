@@ -1,0 +1,5 @@
+- name: Stop the mediawiki-test-deploy deployment
+  shell: "kubectl delete deployment.apps/mediawiki-test-deploy"
+
+- name: Stop the mediawiki-test-service svc
+  shell: "kubectl delete service/mediawiki-test-service"

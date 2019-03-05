@@ -1,0 +1,8 @@
+- name: Copy mediawiki-test' yml file
+  template:
+    src: mediawiki-test.yml
+    dest: /home/ubuntu/
+
+- name: Run mediawiki
+  shell: kubectl apply -f /home/ubuntu/mediawiki-test.yml
+  become_user: ubuntu

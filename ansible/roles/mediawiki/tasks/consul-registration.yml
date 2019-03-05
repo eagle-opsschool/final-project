@@ -1,7 +1,7 @@
 ---
 
 - name: Find wikimedia port
-  shell: kubectl get svc -o wide | grep mediawiki | grep -oE '[0-9]{5}'
+  shell: kubectl get svc -o wide | grep "service/mediawiki-service" | grep -oE '[0-9]{5}'
   register: mediawiki_port
   become_user: ubuntu
   delegate_to: "{{ k8s_master_ip }}"

@@ -21,11 +21,3 @@
 - import_tasks: k8s-minion.yml
   tags: k8s
   when: k8s_type == "slave"
-
-- import_tasks: start-the-app.yml
-  tags: mediawiki
-  when: k8s_type == "master"
-
-- import_tasks: consul-registration.yml
-  tags: mediawiki
-  when: k8s_type == "slave"

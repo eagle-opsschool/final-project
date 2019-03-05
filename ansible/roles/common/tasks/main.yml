@@ -8,3 +8,8 @@
   template:
     src: hosts
     dest: /etc/hosts
+
+- name: Disable host checking in ssh
+  lineinfile:
+    path: /etc/ssh/ssh_config
+    line: "StrictHostKeyChecking no"

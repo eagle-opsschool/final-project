@@ -61,7 +61,8 @@
 - hosts: k8s-master
   become: yes
   roles:
-  - service-sync
+  - mediawiki
+#  - service-sync
 
 - hosts: haproxy
   become: yes

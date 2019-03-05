@@ -88,14 +88,12 @@ pipeline {
                 echo "Checking if there were changes since last commit."
                 // git diff will return 1 for changes (failure) which is caught in catch, or 0 meaning no changes 
                 try {
-                    sh "cd final-project/ansible; git diff --quiet --exit-code HEAD~1..HEAD group_vars/k8s"//roles/k8s/templates/mediawiki.yml"
+                    sh "cd ~/final-project/ansible; git diff --quiet --exit-code HEAD~1..HEAD group_vars/k8s"//roles/k8s/templates/mediawiki.yml"
                     return false
                 } catch (err) {
                     return true
                 }
                 //checkFolderForDiffs()
-
-                ID = "mediawiki-test-${DOCKER_TAG}"
             }
         }
 
@@ -130,14 +128,8 @@ pipeline {
         ////////// Step 4 //////////
         stage('Deploy test version') {
             steps {
-                script {
-                    namespace = 'development'
-
-                    echo "Deploying application ${ID} to ${namespace} namespace"
-                    createNamespace (namespace)
-
-                    echo "Deploying"
-                }
+                echo "Deploying application ${ID} to ${namespace} namespace"
+                sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t test"
             }
         }
 
@@ -147,23 +139,22 @@ pipeline {
                  curlTest (namespace, 'http_code')
             }
         }
-
+        
+        stage('Stop test vesion') {
+            steps {
+                echo "Deploying application ${ID} to ${namespace} namespace"
+                sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t stop-test"
+            }
+        }
 
         ////////// Step 6 //////////
         stage('Deploy production version') {
             steps {
-                script {
-                    namespace = 'production'
-
-                    echo "Deploying application ${IMAGE_NAME}:${DOCKER_TAG} to ${namespace} namespace"
-                    createNamespace (namespace)
-
-                    echo "Deploying"
-                }
+               echo "Deploying application ${ID} to ${namespace} namespace"
+               sh "cd ~/final-project/ansibe; ansible-playbook site.yml -l k8s -t mediawiki"
             }
         }
 
-        // Run the 3 tests on the deployed Kubernetes pod and service
         stage('Production tests') {
             steps {
                 curlRun ({{ haproxy_ip }}, 'http_code')
@@ -174,7 +165,7 @@ pipeline {
 	post {
         always {
             echo "Deleting git repo"
-            sh "rm -rf final-project"
+            sh "rm -rf ~/final-project"
         }
     }
 }

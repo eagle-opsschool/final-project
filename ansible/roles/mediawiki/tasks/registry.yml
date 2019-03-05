@@ -1,0 +1,19 @@
+---
+
+- name: Pull wikimedia container
+  docker_image:
+    name: wikimedia/mediawiki:{{ mediawiki_version }}
+
+- name: Tag and push wikimedia container to private registy
+  docker_image:
+    name: wikimedia/mediawiki:{{ mediawiki_version }}
+    repository: localhost:5000/mediawiki
+    tag: "{{ mediawiki_version }}"
+    push: yes
+
+- name: Remove local containers
+  docker_image:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+  - wikimedia/mediawiki:{{ mediawiki_version }}

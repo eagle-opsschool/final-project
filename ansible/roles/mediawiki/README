@@ -1,0 +1,4 @@
+This role:
+1. Pushes the docker image to our private registry.
+2. Runs the mediawiki service.
+3. Registers the service to consul.

@@ -1,0 +1,21 @@
+---
+
+- import_tasks: registry.yml
+  tags: [ 'docker', 'registry']
+  when: k8s_type == "master"
+
+- import_tasks: start-the-app-test.yml
+  tags: [ 'never', 'test']
+  when: k8s_type == "master"
+
+- import_tasks: stop-the-app-test.yml
+  tags: [ 'never', 'stop-test']
+  when: k8s_type == "master"
+
+- import_tasks: start-the-app.yml
+  tags: mediawiki
+  when: k8s_type == "master"
+
+- import_tasks: consul-registration.yml
+  tags: mediawiki
+  when: k8s_type == "slave"

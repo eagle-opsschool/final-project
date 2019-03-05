@@ -492,7 +492,7 @@ resource "aws_instance" "jenkins" {
 }
 
 resource "aws_instance" "icinga" {
-  ami           = "ami-0970ab4b97fe3a913"
+  ami           = "ami-0653e888ec96eab9b"
   instance_type = "t2.micro"
   private_ip    = "10.0.0.113"
   key_name      = "${var.aws_key_name}"

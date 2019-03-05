@@ -11,7 +11,7 @@
   register: outside_addr
 
 - name: Copy consul registration json
-  template: src=payload.json dest=/tmp/payload-mediawiki-test.json
+  template: src=payload-mediawiki-test.json dest=/tmp/payload-mediawiki-test.json
 
 - name: Register to consul
   shell: curl -X PUT --data-binary @/tmp/payload-mediawiki-test.json http://{{ consul_ip }}:8500/v1/agent/service/register

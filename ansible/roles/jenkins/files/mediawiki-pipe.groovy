@@ -109,7 +109,7 @@ pipeline {
 //                    echo "Buildind application and Docker image"
 //                    sh "ssh ubuntu@10.0.0.101 cd ~/final-project/ansible && "
                 script {
-                    mediawiki_version = sh(returnStdout: true, script: "cat ansible/group_vars/k8s |awk '{print \$2}'")
+                    mediawiki_version = sh(returnStdout: true, script: "cat ~/workspace/mediawiki/final-project/ansible/group_vars/k8s |awk '{print \$2}'")
                 }
 
                 echo "Starting container for test" //TODO Dockerfile

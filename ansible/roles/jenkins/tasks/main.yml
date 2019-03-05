@@ -65,3 +65,4 @@
     state: started
     enabled: yes
 
+- import_tasks: docker.yml

@@ -145,7 +145,8 @@ pipeline {
         // Run the 3 tests on the deployed Kubernetes pod and service
         stage('Test test vesion') {
             steps {
-                 curlTest (namespace, 'http_code')
+                sh "sleep 70 && curl -sf http://18.217.78.202:8080/wiki/Main_Page >/dev/null"
+                 //curlTest (namespace, 'http_code')
             }
         }
         
@@ -166,7 +167,7 @@ pipeline {
 
         stage('Production tests') {
             steps {
-                curlRun ('18.217.78.202', 'http_code')
+                sh "curl -sf http://18.217.78.202:80/wiki/Main_Page >/dev/null"
             }
         }
     }

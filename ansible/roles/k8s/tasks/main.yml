@@ -3,13 +3,12 @@
 - import_tasks: docker.yml
   tags: docker
 
+- import_tasks: private-registry.yml
+  tags: [ 'docker', 'registry']
+
 - import_tasks: registry.yml
   tags: [ 'docker', 'registry']
   when: k8s_type == "master"
-
-- import_tasks: private-registry.yml
-  tags: [ 'docker', 'registry']
-  when: k8s_type == "slave"
 
 - import_tasks: k8s-common.yml
   tags: k8s

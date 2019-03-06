@@ -38,10 +38,10 @@
     name: jenkins
     state: stopped
 
-#- name: Copy jenkins config dir
-#  unarchive:
-#    src: jenkins.tar.gz
-#    dest: /var/lib/
+- name: Copy jenkins config dir
+  unarchive:
+    src: jenkins.tar.gz
+    dest: /var/lib/
 
 - name: Verify jenkins has ssh directory
   file:
